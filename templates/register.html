@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Register - GlassRain{% endblock %}
+
+{% block content %}
+<div class="register-container">
+  <div class="auth-card">
+    <h2>Create Your GlassRain Account</h2>
+    <p class="auth-subtitle">Join the future of home intelligence</p>
+    
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+        <div class="password-strength">
+          <div class="strength-meter"></div>
+          <span class="strength-text">Password strength</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input type="text" id="first_name" name="first_name" class="form-control" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input type="text" id="last_name" name="last_name" class="form-control" required>
+      </div>
+      
+      <div class="form-check">
+        <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
+        <label for="terms" class="form-check-label">I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="privacy-link">Privacy Policy</a></label>
+      </div>
+      
+      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    </form>
+    
+    <div class="auth-footer">
+      <p>Already have an account? <a href="{{ url_for('login') }}">Sign In</a></p>
+    </div>
+  </div>
+  
+  <div class="auth-features">
+    <h3>Why Join GlassRain?</h3>
+    <ul>
+      <li><i class="feature-icon home-icon"></i> Interactive 3D property visualization</li>
+      <li><i class="feature-icon design-icon"></i> AI-powered design assistance</li>
+      <li><i class="feature-icon tools-icon"></i> Professional DIY project guidance</li>
+      <li><i class="feature-icon service-icon"></i> Connect with verified service providers</li>
+      <li><i class="feature-icon energy-icon"></i> Track home efficiency &amp; value</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Password strength checker
+  document.getElementById('password').addEventListener('input', function() {
+    const password = this.value;
+    const meter = document.querySelector('.strength-meter');
+    const text = document.querySelector('.strength-text');
+    
+    // Simple strength measurement
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[A-Z]/)) strength += 25;
+    if (password.match(/[0-9]/)) strength += 25;
+    if (password.match(/[^A-Za-z0-9]/)) strength += 25;
+    
+    meter.style.width = strength + '%';
+    
+    if (strength < 25) {
+      meter.style.backgroundColor = '#ff4d4d';
+      text.textContent = 'Weak';
+    } else if (strength < 50) {
+      meter.style.backgroundColor = '#ffa64d';
+      text.textContent = 'Fair';
+    } else if (strength < 75) {
+      meter.style.backgroundColor = '#ffff4d';
+      text.textContent = 'Good';
+    } else {
+      meter.style.backgroundColor = '#4dff4d';
+      text.textContent = 'Strong';
+    }
+  });
+  
+  // Confirm password validation
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    
+    if (password !== confirm) {
+      e.preventDefault();
+      alert('Passwords do not match');
+    }
+  });
+</script>
+{% endblock %}

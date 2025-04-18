@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    
+    <style>
+        /* Color Scheme */
+        :root {
+            --gold: #C29E49;
+            --black: #1A1A1A;
+            --gray: #2E2E2E;
+            --white: #F8F8F8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            max-width: 600px;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(194, 158, 73, 0.5);
+        }
+
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .home-button {
+            display: inline-block;
+            background-color: var(--gold);
+            color: var(--black);
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 22px;
+            color: var(--gold);
+            margin-bottom: 40px;
+        }
+
+        /* House illustration */
+        .house-illustration {
+            position: relative;
+            width: 200px;
+            height: 150px;
+            margin: 0 auto 40px;
+        }
+
+        .house-roof {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 70px solid var(--gold);
+        }
+
+        .house-body {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            width: 160px;
+            height: 80px;
+            background-color: var(--gray);
+            border-radius: 5px;
+        }
+
+        .house-door {
+            position: absolute;
+            bottom: 0;
+            left: 70px;
+            width: 40px;
+            height: 60px;
+            background-color: var(--black);
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .house-window-left {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--black);
+            border-radius: 3px;
+        }
+
+        .house-window-right {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--black);
+            border-radius: 3px;
+        }
+
+        .glitch-effect {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-5px, 5px);
+            }
+            40% {
+                transform: translate(-5px, -5px);
+            }
+            60% {
+                transform: translate(5px, 5px);
+            }
+            80% {
+                transform: translate(5px, -5px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">Home Intelligence</div>
+
+    <div class="house-illustration glitch-effect">
+        <div class="house-roof"></div>
+        <div class="house-body"></div>
+        <div class="house-door"></div>
+        <div class="house-window-left"></div>
+        <div class="house-window-right"></div>
+    </div>
+
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Page Not Found</h2>
+        <p class="error-message">The home you're looking for doesn't seem to exist. It might have been moved, demolished, or was just a blueprint that never got built.</p>
+        <a href="/" class="home-button">Return Home</a>
+    </div>
+</body>
+</html>

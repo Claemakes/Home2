@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlassRain - Elevate</title>
+    
+    <!-- Three.js for 3D visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <!-- GlassRain Elevate AI Script -->
+    <script src="/static/js/elevate.js" defer></script>
+    
+    <style>
+        /* Color Scheme */
+        :root {
+            --gold: #C29E49;
+            --black: #000000;
+            --dark-gray: #1A1A1A;
+            --gray: #2E2E2E;
+            --white: #F8F8F8;
+            --light-gray: #E5E5E5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            padding-top: 70px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        /* Fixed Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(194, 158, 73, 0.2);
+            width: 100%;
+        }
+        
+        .logo {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 22px;
+            color: var(--gold);
+            z-index: 1001;
+            flex: 0 0 auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            white-space: nowrap;
+            margin-left: auto;
+            gap: 5px;
+        }
+        
+        .nav-tab {
+            color: #fff;
+            margin: 0 12px;
+            padding: 5px 10px;
+            text-decoration: none;
+            position: relative;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 400;
+            font-size: 15px;
+            letter-spacing: 0.2px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab:hover {
+            color: var(--gold);
+        }
+        
+        .nav-tab.active {
+            color: var(--gold);
+            font-weight: 500;
+        }
+        
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--gold);
+        }
+        
+        .user-controls {
+            flex: 0 0 auto;
+            text-align: right;
+            margin-left: 25px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Elevate Tabs */
+        .elevate-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(194, 158, 73, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .elevate-tab {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 12px 20px;
+            color: #888;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .elevate-tab.active {
+            color: var(--gold);
+        }
+
+        .elevate-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--gold);
+        }
+        
+        /* Tab Content Containers */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Camera Scanner View */
+        .camera-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            margin-bottom: 20px;
+            background-color: var(--dark-gray);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .camera-view {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-image: linear-gradient(to bottom right, #1a1a1a, #000000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .camera-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .camera-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+        
+        .camera-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .scan-button {
+            background-color: var(--gold);
+            color: var(--black);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(194, 158, 73, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .scan-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 25px rgba(194, 158, 73, 0.5);
+        }
+        
+        .scan-button:active {
+            transform: scale(0.95);
+        }
+
+        .camera-instruction {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 12px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 5;
+        }
+        
+        .camera-instruction span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        /* Upload Interface */
+        .upload-interface {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            border: 1px solid rgba(194, 158, 73, 0.3);
+        }
+        
+        .upload-title {
+            color: var(--gold);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .upload-button {
+            background-color: rgba(194, 158, 73, 0.2);
+            border: 2px dashed var(--gold);
+            border-radius: 8px;
+            padding: 30px 15px;
+            width: 100%;
+            text-align: center;
+            color: var(--gold);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .upload-button:hover {
+            background-color: rgba(194, 158, 73, 0.3);
+        }
+        
+        .upload-note {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+        }
+        
+        /* Landing Page Prompt */
+        .landing-prompt {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 5;
+        }
+        
+        .landing-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .landing-subtitle {
+            font-size: 20px;
+            color: var(--white);
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+        
+        /* Scanned Rooms Grid */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .room-card {
+            background-color: var(--dark-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(194, 158, 73, 0.3);
+        }
+        
+        .room-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+        }
+        
+        .room-details {
+            padding: 15px;
+        }
+        
+        .room-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+        
+        .room-date {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        /* Design View */
+        .design-view {
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+        
+        .room-display {
+            flex: 1;
+            background-color: var(--dark-gray);
+            border-radius: 12px 12px 0 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .room-image-large {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #1a1a1a;
+        }
+        
+        /* 3D Measurements Panel */
+        .measurements-panel {
+            display: flex;
+            flex-direction: column;
+            width: 320px;
+            margin-left: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--gold);
+            background-color: rgba(30, 30, 30, 0.95);
+            position: absolute;
+            top: 120px;
+            right: 30px;
+            max-height: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        .measurements-header {
+            background-color: var(--gold);
+            color: #000;
+            font-weight: bold;
+            padding: 10px 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .measurements-content {
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+        
+        .measurement-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .measurement-label {
+            font-weight: 500;
+        }
+        
+        .measurement-value {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .total-cost {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            font-size: 16px;
+        }
+        
+        .total-cost .measurement-value {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        
+        .view-3d-button {
+            background-color: var(--gold);
+            color: #000;
+            text-align: center;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .view-3d-button:hover {
+            background-color: #d4af61;
+        }
+
+        /* AI Chat Panel - Bottom Third */
+        .ai-chat-panel {
+            height: 33vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 0 0 12px 12px;
+            border-top: 2px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 12px 15px;
+            background-color: var(--gray);
+            color: var(--gold);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(194, 158, 73, 0.3);
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .chat-message {
+            max-width: 80%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .user-message {
+            background-color: var(--gold);
+            color: var(--black);
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        
+        .ai-message {
+            background-color: var(--gray);
+            color: #fff;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 10px 15px;
+            border-top: 1px solid rgba(194, 158, 73, 0.3);
+        }
+        
+        .chat-input {
+            flex-grow: 1;
+            background-color: rgba(30, 30, 30, 0.8);
+            border: 1px solid #444;
+            border-radius: 20px;
+            padding: 12px 15px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .chat-send-btn {
+            background-color: var(--gold);
+            color: var(--black);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Saved Designs Grid */
+        .designs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .design-card {
+            background-color: var(--dark-gray);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+        
+        .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(194, 158, 73, 0.3);
+        }
+        
+        .design-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #333;
+        }
+        
+        .design-details {
+            padding: 15px;
+        }
+        
+        .design-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+        
+        .design-room {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        
+        .design-description {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.4;
+        }
+        
+        .design-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--gold);
+            color: var(--black);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        /* No content states */
+        .no-content {
+            width: 100%;
+            padding: 60px 0;
+            text-align: center;
+            color: #555;
+        }
+        
+        .no-content h3 {
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .no-content p {
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">GlassRain</div>
+        <nav class="nav-tabs">
+            <a href="/dashboard" class="nav-tab">Home</a>
+            <a href="/elevate" class="nav-tab active">Elevate</a>
+            <a href="/services" class="nav-tab">Services</a>
+            <a href="/diy" class="nav-tab">DIY</a>
+            <a href="/control" class="nav-tab">Control</a>
+            <a href="/settings" class="nav-tab">Account</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Elevate Tabs -->
+        <div class="elevate-tabs">
+            <div class="elevate-tab active" data-tab="scanner">Room Scanner</div>
+            <div class="elevate-tab" data-tab="scanned-rooms">Scanned Rooms</div>
+            <div class="elevate-tab" data-tab="design">Design</div>
+            <div class="elevate-tab" data-tab="saved-designs">Saved Designs</div>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="scanner-tab" class="tab-content active">
+            <div class="camera-container">
+                <div class="camera-view">
+                    <div class="landing-prompt">
+                        <h1 class="landing-title">Design at your fingertips.</h1>
+                        <p class="landing-subtitle">Transform your space with our AI-powered scanner. Get accurate measurements, personalized designs, and real-time cost estimates to guide your home improvement journey.</p>
+                    </div>
+                    
+                    <div class="camera-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        <p>Camera preview will appear here</p>
+                    </div>
+                    
+                    <div class="camera-instruction">
+                        Point your camera at the room and tap <span>SCAN</span> to analyze
+                    </div>
+                    
+
+                    
+                    <div class="camera-controls">
+                        <button class="scan-button" id="scan-button">SCAN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="scanned-rooms-tab" class="tab-content">
+            <div class="rooms-grid">
+                <div class="room-card">
+                    <div class="room-image">Room Preview</div>
+                    <div class="room-details">
+                        <div class="room-name">Living Room</div>
+                        <div class="room-date">Scanned Apr 12, 2025</div>
+                    </div>
+                </div>
+                <div class="room-card">
+                    <div class="room-image">Room Preview</div>
+                    <div class="room-details">
+                        <div class="room-name">Kitchen</div>
+                        <div class="room-date">Scanned Apr 10, 2025</div>
+                    </div>
+                </div>
+                <div class="room-card">
+                    <div class="room-image">Room Preview</div>
+                    <div class="room-details">
+                        <div class="room-name">Master Bedroom</div>
+                        <div class="room-date">Scanned Apr 5, 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="design-tab" class="tab-content">
+            <div class="design-view">
+                <div class="room-display">
+                    <div class="room-image-large">
+                        <!-- Room image will be displayed here -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 800 500" style="width: 100%; height: 100%;">
+                            <rect width="100%" height="100%" fill="#1a1a1a"/>
+                            <text x="50%" y="50%" font-family="Arial" font-size="20" fill="#666" text-anchor="middle" dominant-baseline="middle">Select a room from "Scanned Rooms" to view design</text>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="ai-chat-panel">
+                    <div class="chat-header">
+                        <div>AI Design Assistant</div>
+                    </div>
+                    <div class="chat-messages" id="design-chat-messages">
+                        <div class="chat-message ai-message">
+                            Welcome to GlassRain Design Assistant! I can help you reimagine this room. What aspects would you like to improve - lighting, colors, furniture layout, or other design elements?
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="design-chat-input" placeholder="Ask about design ideas or describe issues you see...">
+                        <button class="chat-send-btn" id="design-chat-send">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="saved-designs-tab" class="tab-content">
+            <div class="designs-container">
+                <div class="designs-grid">
+                    <div class="design-card" data-design-id="1" onclick="showDesignDetails(1)">
+                        <div class="design-badge">Version 1</div>
+                        <div class="design-image">Design Preview</div>
+                        <div class="design-details">
+                            <div class="design-name">Modern Living Room</div>
+                            <div class="design-room">Living Room</div>
+                            <div class="design-description">Minimalist design with neutral tones and accent lighting</div>
+                        </div>
+                    </div>
+                    <div class="design-card" data-design-id="2" onclick="showDesignDetails(2)">
+                        <div class="design-badge">Version 2</div>
+                        <div class="design-image">Design Preview</div>
+                        <div class="design-details">
+                            <div class="design-name">Cozy Living Room</div>
+                            <div class="design-room">Living Room</div>
+                            <div class="design-description">Warm colors with layered textiles and natural elements</div>
+                        </div>
+                    </div>
+                    <div class="design-card" data-design-id="3" onclick="showDesignDetails(3)">
+                        <div class="design-badge">Version 1</div>
+                        <div class="design-image">Design Preview</div>
+                        <div class="design-details">
+                            <div class="design-name">Kitchen Refresh</div>
+                            <div class="design-room">Kitchen</div>
+                            <div class="design-description">Updated backsplash and lighting fixtures</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="measurements-panel" id="measurements-panel" style="display: none;">
+                    <div class="measurements-header">
+                        Room Measurements & Costs
+                    </div>
+                    <div class="measurements-content">
+                        <div class="measurement-item">
+                            <span class="measurement-label">Room Area:</span>
+                            <span class="measurement-value">215 sq ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Ceiling Height:</span>
+                            <span class="measurement-value">8.2 ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Wall Area:</span>
+                            <span class="measurement-value">418 sq ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Paintable Area:</span>
+                            <span class="measurement-value">372 sq ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Floor Area:</span>
+                            <span class="measurement-value">215 sq ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Window Area:</span>
+                            <span class="measurement-value">24 sq ft</span>
+                        </div>
+                        <div class="measurement-item">
+                            <span class="measurement-label">Door Area:</span>
+                            <span class="measurement-value">22 sq ft</span>
+                        </div>
+                        
+                        <div class="measurement-item total-cost">
+                            <span class="measurement-label">Materials:</span>
+                            <span class="measurement-value">$2,460</span>
+                        </div>
+                        <div class="measurement-item total-cost">
+                            <span class="measurement-label">Labor:</span>
+                            <span class="measurement-value">$1,325</span>
+                        </div>
+                        <div class="measurement-item total-cost">
+                            <span class="measurement-label">Total Cost:</span>
+                            <span class="measurement-value">$3,785</span>
+                        </div>
+                    </div>
+                    
+                    <div class="view-3d-button" onclick="view3DRoom()">
+                        View in 3D
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for room measurements and selected design
+        let currentRoomMeasurements = null;
+        let selectedDesignId = null;
+        
+        // Function to show design details and measurements panel
+        function showDesignDetails(designId) {
+            selectedDesignId = designId;
+            
+            // Show measurements panel
+            const measurementsPanel = document.getElementById('measurements-panel');
+            measurementsPanel.style.display = 'flex';
+            
+            // For demo purposes, we'll use mock data
+            // In a real implementation, this would fetch actual saved measurements from the server
+            const measurementData = {
+                1: {
+                    total_area: 215,
+                    ceiling_height: 8.2,
+                    total_wall_area: 418,
+                    paintable_area: 372,
+                    floor_area: 215,
+                    window_area: 24,
+                    door_area: 22,
+                    costs: {
+                        materials: {
+                            total_materials: 2460
+                        },
+                        labor: {
+                            total_labor: 1325
+                        },
+                        total: 3785,
+                        quality_level: 'premium'
+                    }
+                },
+                2: {
+                    total_area: 192,
+                    ceiling_height: 8.0,
+                    total_wall_area: 398,
+                    paintable_area: 358,
+                    floor_area: 192,
+                    window_area: 20,
+                    door_area: 20,
+                    costs: {
+                        materials: {
+                            total_materials: 2180
+                        },
+                        labor: {
+                            total_labor: 1150
+                        },
+                        total: 3330,
+                        quality_level: 'standard'
+                    }
+                },
+                3: {
+                    total_area: 175,
+                    ceiling_height: 8.2,
+                    total_wall_area: 375,
+                    paintable_area: 335,
+                    floor_area: 175,
+                    window_area: 22,
+                    door_area: 18,
+                    costs: {
+                        materials: {
+                            total_materials: 3720
+                        },
+                        labor: {
+                            total_labor: 1850
+                        },
+                        total: 5570,
+                        quality_level: 'luxury'
+                    }
+                }
+            };
+            
+            // Get measurements for the selected design
+            const measurements = measurementData[designId];
+            
+            // Update measurements panel with the data
+            if (measurements) {
+                document.querySelector('.measurement-item:nth-child(1) .measurement-value').textContent = `${measurements.total_area} sq ft`;
+                document.querySelector('.measurement-item:nth-child(2) .measurement-value').textContent = `${measurements.ceiling_height} ft`;
+                document.querySelector('.measurement-item:nth-child(3) .measurement-value').textContent = `${measurements.total_wall_area} sq ft`;
+                document.querySelector('.measurement-item:nth-child(4) .measurement-value').textContent = `${measurements.paintable_area} sq ft`;
+                document.querySelector('.measurement-item:nth-child(5) .measurement-value').textContent = `${measurements.floor_area} sq ft`;
+                document.querySelector('.measurement-item:nth-child(6) .measurement-value').textContent = `${measurements.window_area} sq ft`;
+                document.querySelector('.measurement-item:nth-child(7) .measurement-value').textContent = `${measurements.door_area} sq ft`;
+                
+                document.querySelector('.total-cost:nth-child(8) .measurement-value').textContent = `$${measurements.costs.materials.total_materials}`;
+                document.querySelector('.total-cost:nth-child(9) .measurement-value').textContent = `$${measurements.costs.labor.total_labor}`;
+                document.querySelector('.total-cost:nth-child(10) .measurement-value').textContent = `$${measurements.costs.total}`;
+                
+                // Highlight the design card that's selected
+                document.querySelectorAll('.design-card').forEach(card => {
+                    if (parseInt(card.getAttribute('data-design-id')) === designId) {
+                        card.style.borderColor = 'var(--gold)';
+                        card.style.transform = 'translateY(-5px)';
+                        card.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.5)';
+                    } else {
+                        card.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                        card.style.transform = 'none';
+                        card.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.3)';
+                    }
+                });
+            }
+        }
+        
+        // Function to view the room in 3D
+        function view3DRoom() {
+            if (!selectedDesignId) return;
+            
+            // In a real implementation, this would open a 3D viewer or launch AR
+            // For now, we'll just show an alert
+            alert(`Launching 3D viewer for design ${selectedDesignId}.\n\nThis would normally open a Three.js-powered 3D model of the room with accurate measurements.`);
+            
+            // Here we would normally:
+            // 1. Load the 3D model data for the selected room
+            // 2. Initialize a Three.js scene with the model
+            // 3. Add measurement annotations to the 3D view
+            // 4. Allow user to navigate the 3D space and see measurements
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab Switching
+            const tabs = document.querySelectorAll('.elevate-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Show corresponding tab content
+                    const tabId = this.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Scanner Tab Functionality
+            const scanButton = document.getElementById('scan-button');
+            
+            scanButton.addEventListener('click', function() {
+                // Simulate scanning process
+                this.textContent = 'SCANNING...';
+                this.style.backgroundColor = '#d4af61';
+                
+                // After "scanning", switch to the design tab and show a scanned room
+                setTimeout(() => {
+                    // Reset button
+                    this.textContent = 'SCAN';
+                    this.style.backgroundColor = 'var(--gold)';
+                    
+                    // Navigate to design tab
+                    document.querySelector('[data-tab="design"]').click();
+                    
+                    // Update the room display with a "scanned" image
+                    const roomDisplay = document.querySelector('.room-image-large');
+                    roomDisplay.innerHTML = '';
+                    
+                    const roomImg = document.createElement('img');
+                    roomImg.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
+                        '<rect width="100%" height="100%" fill="#2a2a2a"/>' +
+                        '<rect x="100" y="250" width="600" height="300" fill="#333"/>' +
+                        '<rect x="150" y="50" width="500" height="200" fill="#444"/>' +
+                        '<circle cx="400" cy="300" r="50" fill="#555"/>' +
+                        '<text x="400" y="300" font-family="Arial" font-size="20" fill="#999" text-anchor="middle">Scanned Room Preview</text>' +
+                        '</svg>'
+                    );
+                    roomImg.style.width = '100%';
+                    roomImg.style.height = '100%';
+                    roomImg.style.objectFit = 'contain';
+                    
+                    roomDisplay.appendChild(roomImg);
+                    
+                    // Add welcome message with AI guidance
+                    const chatMessages = document.getElementById('design-chat-messages');
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'chat-message ai-message';
+                    aiMessage.textContent = "I've analyzed your living room and found several opportunities for improvement. The lighting appears uneven with dark corners, and the furniture arrangement could be optimized for better flow. Would you like specific recommendations for lighting, furniture layout, or color scheme?";
+                    chatMessages.appendChild(aiMessage);
+                    
+                    // Scroll to the bottom of the chat
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 2000);
+            });
+            
+
+            
+            // Room Cards in Scanned Rooms Tab
+            const roomCards = document.querySelectorAll('.room-card');
+            
+            roomCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Navigate to design tab and show the selected room
+                    document.querySelector('[data-tab="design"]').click();
+                    
+                    // Get room name from the card
+                    const roomName = this.querySelector('.room-name').textContent;
+                    
+                    // Update the room display
+                    const roomDisplay = document.querySelector('.room-image-large');
+                    roomDisplay.innerHTML = '';
+                    
+                    const roomImg = document.createElement('img');
+                    roomImg.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
+                        '<rect width="100%" height="100%" fill="#2a2a2a"/>' +
+                        '<rect x="100" y="250" width="600" height="300" fill="#333"/>' +
+                        '<rect x="150" y="50" width="500" height="200" fill="#444"/>' +
+                        '<circle cx="400" cy="300" r="50" fill="#555"/>' +
+                        '<text x="400" y="300" font-family="Arial" font-size="20" fill="#999" text-anchor="middle">' + roomName + ' Preview</text>' +
+                        '</svg>'
+                    );
+                    roomImg.style.width = '100%';
+                    roomImg.style.height = '100%';
+                    roomImg.style.objectFit = 'contain';
+                    
+                    roomDisplay.appendChild(roomImg);
+                    
+                    // Add AI message specific to the selected room
+                    const chatMessages = document.getElementById('design-chat-messages');
+                    
+                    // Clear previous messages except the first welcome
+                    const welcomeMessage = chatMessages.firstElementChild;
+                    chatMessages.innerHTML = '';
+                    chatMessages.appendChild(welcomeMessage);
+                    
+                    // Add room-specific message
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'chat-message ai-message';
+                    
+                    if (roomName === 'Living Room') {
+                        aiMessage.textContent = "Looking at your living room, I notice it could benefit from better lighting solutions, especially in the corners. The furniture layout could also be improved for better conversation flow. Would you like ideas for lighting fixes or furniture rearrangement?";
+                    } else if (roomName === 'Kitchen') {
+                        aiMessage.textContent = "I'm analyzing your kitchen scan. The cabinet hardware appears outdated, and the lighting over the countertops could be improved for task work. Would you like recommendations for modern hardware options or under-cabinet lighting solutions?";
+                    } else if (roomName === 'Master Bedroom') {
+                        aiMessage.textContent = "Your master bedroom has great potential! I notice the wall paint could use refreshing, and the room could benefit from improved lighting for a more relaxing atmosphere. Would you like color palette suggestions or lighting recommendations?";
+                    }
+                    
+                    chatMessages.appendChild(aiMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            });
+            
+            // Design Chat Functionality
+            const designChatInput = document.getElementById('design-chat-input');
+            const designChatSend = document.getElementById('design-chat-send');
+            const designChatMessages = document.getElementById('design-chat-messages');
+            
+            async function sendDesignMessage() {
+                const message = designChatInput.value.trim();
+                
+                if (message) {
+                    // Add user message
+                    const userMessage = document.createElement('div');
+                    userMessage.className = 'chat-message user-message';
+                    userMessage.textContent = message;
+                    designChatMessages.appendChild(userMessage);
+                    
+                    // Clear input
+                    designChatInput.value = '';
+                    
+                    // Scroll to bottom
+                    designChatMessages.scrollTop = designChatMessages.scrollHeight;
+                    
+                    // Add typing indicator
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'chat-message ai-message';
+                    typingIndicator.textContent = 'Typing...';
+                    typingIndicator.id = 'typing-indicator';
+                    designChatMessages.appendChild(typingIndicator);
+                    designChatMessages.scrollTop = designChatMessages.scrollHeight;
+                    
+                    try {
+                        // Get current room image display
+                        const roomDisplay = document.querySelector('.room-image-large');
+                        const roomImage = roomDisplay.querySelector('img');
+                        
+                        if (roomImage) {
+                            // Process the design request using AI
+                            const roomImageBlob = await fetch(roomImage.src).then(res => res.blob());
+                            
+                            // Send to API for processing
+                            const formData = new FormData();
+                            formData.append('room_image', roomImageBlob, 'room.jpg');
+                            formData.append('design_request', message);
+                            
+                            // Call the OpenAI-powered API
+                            const response = await fetch('/api/ai/design-room', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (response.ok) {
+                                const result = await response.json();
+                                
+                                if (result.success) {
+                                    // Remove typing indicator
+                                    document.getElementById('typing-indicator').remove();
+                                    
+                                    // Update the room display with the modified image
+                                    const newRoomImg = document.createElement('img');
+                                    newRoomImg.src = result.modified_image_url;
+                                    newRoomImg.style.width = '100%';
+                                    newRoomImg.style.height = '100%';
+                                    newRoomImg.style.objectFit = 'contain';
+                                    
+                                    // Replace current image with new one
+                                    roomDisplay.innerHTML = '';
+                                    roomDisplay.appendChild(newRoomImg);
+                                    
+                                    // Add AI response
+                                    const aiMessage = document.createElement('div');
+                                    aiMessage.className = 'chat-message ai-message';
+                                    aiMessage.textContent = result.ai_description;
+                                    designChatMessages.appendChild(aiMessage);
+                                    designChatMessages.scrollTop = designChatMessages.scrollHeight;
+                                } else {
+                                    throw new Error(result.error || 'Unknown error');
+                                }
+                            } else {
+                                throw new Error('Failed to process design request');
+                            }
+                        } else {
+                            // Fallback if no room image is available
+                            processDesignRequestFallback(message);
+                        }
+                    } catch (error) {
+                        console.error('Error processing design request:', error);
+                        
+                        // Remove typing indicator
+                        document.getElementById('typing-indicator')?.remove();
+                        
+                        // Fallback to canned responses if API call fails
+                        processDesignRequestFallback(message);
+                    }
+                }
+            }
+            
+            // Fallback function when API call fails
+            function processDesignRequestFallback(message) {
+                // Generate response based on keywords
+                let response = '';
+                
+                if (message.toLowerCase().includes('lighting')) {
+                    response = "For your lighting issues, I recommend a layered approach with ambient, task, and accent lighting. Consider replacing the ceiling fixture with a modern pendant light (approx. $150-300) and adding corner floor lamps for the dark areas (approx. $80-150 each). Under-cabinet LED strips would also improve task lighting in your workspace (approx. $50-100).";
+                } else if (message.toLowerCase().includes('wall') || message.toLowerCase().includes('paint') || message.toLowerCase().includes('color')) {
+                    response = "Looking at your room, I'd recommend warmer neutral tones that complement your existing furniture. Benjamin Moore's 'Revere Pewter' or 'Edgecomb Gray' would work well for the main walls, with an accent wall in a deeper shade like 'Chelsea Gray'. Paint costs would be approximately $200-350 for the room, plus $150-300 for professional painting if you don't DIY.";
+                } else if (message.toLowerCase().includes('furniture') || message.toLowerCase().includes('layout')) {
+                    response = "I suggest repositioning your sofa to face the windows and moving the armchair to create a conversation area. A round coffee table would improve flow through the room. For new pieces, a quality sectional costs approximately $1,200-2,500, a new coffee table $200-500, and accent pieces $100-300 each.";
+                } else if (message.toLowerCase().includes('cost') || message.toLowerCase().includes('budget') || message.toLowerCase().includes('price')) {
+                    response = "Based on the issues I've identified, here's a budget breakdown: Lighting updates ($300-600), Wall paint refresh ($350-550), New area rug ($200-400), Accent furniture pieces ($500-1,200). A complete room transformation would cost approximately $1,350-2,750 depending on the quality of materials and whether you DIY some elements.";
+                } else {
+                    response = "I've analyzed your room and have several recommendations. The main issues I see are: 1) Uneven lighting creating dark corners, 2) Furniture layout that restricts movement, and 3) Outdated wall colors that don't maximize the space. Would you like specific suggestions for any of these areas? I can also provide cost estimates for the improvements.";
+                }
+                
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'chat-message ai-message';
+                aiMessage.textContent = response;
+                designChatMessages.appendChild(aiMessage);
+                designChatMessages.scrollTop = designChatMessages.scrollHeight;
+            }
+            
+            designChatSend.addEventListener('click', sendDesignMessage);
+            
+            designChatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    sendDesignMessage();
+                    e.preventDefault();
+                }
+            });
+            
+            // Saved Design Cards
+            const designCards = document.querySelectorAll('.design-card');
+            
+            designCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Navigate to design tab
+                    document.querySelector('[data-tab="design"]').click();
+                    
+                    // Get design details from the card
+                    const designName = this.querySelector('.design-name').textContent;
+                    const roomName = this.querySelector('.design-room').textContent;
+                    
+                    // Update room display
+                    const roomDisplay = document.querySelector('.room-image-large');
+                    roomDisplay.innerHTML = '';
+                    
+                    const designImg = document.createElement('img');
+                    designImg.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
+                        '<rect width="100%" height="100%" fill="#2a2a2a"/>' +
+                        '<rect x="50" y="150" width="700" height="400" fill="#333"/>' +
+                        '<rect x="100" y="50" width="600" height="100" fill="#555"/>' +
+                        '<text x="400" y="300" font-family="Arial" font-size="24" fill="#999" text-anchor="middle">' + designName + '</text>' +
+                        '<text x="400" y="340" font-family="Arial" font-size="18" fill="#777" text-anchor="middle">' + roomName + '</text>' +
+                        '</svg>'
+                    );
+                    designImg.style.width = '100%';
+                    designImg.style.height = '100%';
+                    designImg.style.objectFit = 'contain';
+                    
+                    roomDisplay.appendChild(designImg);
+                    
+                    // Add design-specific message
+                    const chatMessages = document.getElementById('design-chat-messages');
+                    
+                    // Clear previous messages
+                    chatMessages.innerHTML = '';
+                    
+                    // Create and show measurements panel with 3D data
+                    const measurementsPanel = document.createElement('div');
+                    measurementsPanel.className = 'measurements-panel';
+                    measurementsPanel.innerHTML = `
+                        <div class="measurements-header">Room Measurements</div>
+                        <div class="measurements-content">
+                            <div class="measurement-item">
+                                <span class="measurement-label">Total Area:</span>
+                                <span class="measurement-value">215 sq ft</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Wall Height:</span>
+                                <span class="measurement-value">8 ft 2 in</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Wall 1 Length:</span>
+                                <span class="measurement-value">12 ft 3 in</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Wall 2 Length:</span>
+                                <span class="measurement-value">17 ft 6 in</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Wall Surface Area:</span>
+                                <span class="measurement-value">486 sq ft</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Window Area:</span>
+                                <span class="measurement-value">24 sq ft</span>
+                            </div>
+                        </div>
+                        <div class="measurements-header">Cost Breakdown</div>
+                        <div class="measurements-content">
+                            <div class="measurement-item">
+                                <span class="measurement-label">Paint (Premium):</span>
+                                <span class="measurement-value">$325</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Lighting Fixtures:</span>
+                                <span class="measurement-value">$450</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Furniture:</span>
+                                <span class="measurement-value">$1,850</span>
+                            </div>
+                            <div class="measurement-item">
+                                <span class="measurement-label">Labor:</span>
+                                <span class="measurement-value">$750</span>
+                            </div>
+                            <div class="measurement-item total-cost">
+                                <span class="measurement-label">Total Estimate:</span>
+                                <span class="measurement-value">$3,375</span>
+                            </div>
+                        </div>
+                        <div class="view-3d-button">View in 3D</div>
+                    `;
+                    
+                    roomDisplay.insertAdjacentElement('afterend', measurementsPanel);
+                    
+                    // Add event listener to 3D view button
+                    document.querySelector('.view-3d-button').addEventListener('click', function() {
+                        alert('3D viewer would open here, allowing you to navigate around the room in 3D space and see measurements from any angle.');
+                    });
+                    
+                    // Add welcome message
+                    const aiMessage = document.createElement('div');
+                    aiMessage.className = 'chat-message ai-message';
+                    aiMessage.textContent = `This is your saved "${designName}" design for the ${roomName}. Above you can see the exact measurements captured during your 3D scan and a detailed cost breakdown. Would you like me to explain any aspect of the design or estimates?`;
+                    
+                    chatMessages.appendChild(aiMessage);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
