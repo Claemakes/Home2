@@ -20,7 +20,16 @@ from flask import Blueprint, request, jsonify, render_template
 from datetime import datetime
 
 # Initialize OpenAI client
-openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY', ''))
+# Initialize OpenAI client properly without proxies
+try:
+    import httpx
+    # Create httpx client explicitly without proxies
+    http_client = httpx.Client(timeout=60.0)
+    openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY', ''), http_client=http_client)
+    logger.info("OpenAI client initialized in elevate_routes")
+except Exception as e:
+    logger.error(f"Error initializing OpenAI client in elevate_routes: {str(e)}")
+    openai_client = None
 logger = logging.getLogger('elevate_routes')
 if os.environ.get('OPENAI_API_KEY'):
     logger.info("OpenAI API initialized successfully in elevate_routes")

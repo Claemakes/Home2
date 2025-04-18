@@ -49,8 +49,18 @@ class ContractorDataService:
             raise ValueError("OpenAI API key is required")
             
         self.api_key = api_key
-        self.openai_client = OpenAI(api_key=api_key)
-        logger.info("OpenAI client initialized in contractor data service")
+        
+        # Initialize OpenAI client properly without proxies
+        # In OpenAI 1.3.0+, the proxies parameter is not supported
+        try:
+            import httpx
+            # Create httpx client explicitly without proxies
+            http_client = httpx.Client(timeout=60.0)
+            self.openai_client = OpenAI(api_key=api_key, http_client=http_client)
+            logger.info("OpenAI client initialized in contractor data service")
+        except Exception as e:
+            logger.error(f"Error initializing OpenAI client: {str(e)}")
+            raise
     
     def get_contractors_by_service_location(self, service_type, city, state, limit=9):
         """

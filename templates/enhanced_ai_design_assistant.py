@@ -28,7 +28,15 @@ class DesignAssistant:
         self.api_key = os.environ.get('OPENAI_API_KEY', '')
         self.openai_client = None
         if self.api_key:
-            self.openai_client = OpenAI(api_key=self.api_key)
+            try:
+                import httpx
+                # Create httpx client explicitly without proxies
+                http_client = httpx.Client(timeout=60.0)
+                self.openai_client = OpenAI(api_key=self.api_key, http_client=http_client)
+                logger.info("OpenAI client initialized in enhanced_ai_design_assistant")
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client: {str(e)}")
+                self.openai_client = None
         
         # Material and item database
         self.materials_db = self._load_materials_database()

@@ -3672,7 +3672,15 @@ try:
     from openai import OpenAI
     openai_api_key = os.environ.get('OPENAI_API_KEY')
     if openai_api_key:
-        openai_client = OpenAI(api_key=openai_api_key)
+        try:
+            import httpx
+            # Create httpx client explicitly without proxies
+            http_client = httpx.Client(timeout=60.0)
+            openai_client = OpenAI(api_key=openai_api_key, http_client=http_client)
+            logger.info("OpenAI client initialized in glassrain_unified")
+        except Exception as e:
+            logger.error(f"Error initializing OpenAI client: {str(e)}")
+            raise
         openai_available = True
         logger.info("✅ OpenAI API initialized successfully")
     else:

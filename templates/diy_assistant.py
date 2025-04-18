@@ -33,8 +33,16 @@ class DIYAssistant:
         """
         self.api_key = api_key or os.environ.get('OPENAI_API_KEY', '')
         self.openai_client = None
+        
         if self.api_key:
-            self.openai_client = OpenAI(api_key=self.api_key)
+            try:
+                import httpx
+                # Create httpx client explicitly without proxies
+                http_client = httpx.Client(timeout=60.0)
+                self.openai_client = OpenAI(api_key=self.api_key, http_client=http_client)
+                logger.info("OpenAI client initialized in DIY assistant")
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client in DIY assistant: {str(e)}")
         
         # Load project database
         self.projects_db = self._load_projects_database()

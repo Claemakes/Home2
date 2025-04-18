@@ -41,7 +41,15 @@ else:
 # Initialize OpenAI client globally
 client = None
 if openai_api_key:
-    client = OpenAI(api_key=openai_api_key)
+    try:
+        import httpx
+        # Create httpx client explicitly without proxies
+        http_client = httpx.Client(timeout=60.0)
+        client = OpenAI(api_key=openai_api_key, http_client=http_client)
+        logger.info("OpenAI client initialized in enhanced_property_data_service (global)")
+    except Exception as e:
+        logger.error(f"Error initializing OpenAI client: {str(e)}")
+        client = None
 
 # Cache for property data to minimize repeated requests
 property_data_cache = {}
@@ -58,8 +66,20 @@ class EnhancedPropertyDataService:
             logger.error("OPENAI_API_KEY not found in environment variables")
             self.openai_client = None
         else:
-            self.openai_client = OpenAI(api_key=self.openai_api_key)
-            logger.info("OpenAI API initialized successfully")
+            
+            # Note: In OpenAI 1.3.0, the 'proxies' parameter is not supported in the client
+            # initialization. If you need to use proxies, you'll need to configure them
+            # at the httpx library level or use environment variables.
+            
+            try:
+                import httpx
+                # Create httpx client explicitly without proxies
+                http_client = httpx.Client(timeout=60.0)
+                self.openai_client = OpenAI(api_key=self.openai_api_key, http_client=http_client)
+                logger.info("OpenAI API initialized successfully in EnhancedPropertyDataService")
+            except Exception as e:
+                logger.error(f"Error initializing OpenAI client in EnhancedPropertyDataService: {str(e)}")
+                self.openai_client = None
         
         # Initialize API clients with credentials
         self._initialize_zillow_api()

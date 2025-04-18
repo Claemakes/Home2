@@ -30,7 +30,17 @@ def get_openai_client():
     if not api_key:
         logger.error("OPENAI_API_KEY not found in environment variables")
         raise ValueError("OpenAI API key not configured")
-    return OpenAI(api_key=api_key)
+    
+    try:
+        import httpx
+        # Create httpx client explicitly without proxies
+        http_client = httpx.Client(timeout=60.0)
+        client = OpenAI(api_key=api_key, http_client=http_client)
+        logger.info("OpenAI client initialized in ai_design_routes")
+        return client
+    except Exception as e:
+        logger.error(f"Error initializing OpenAI client: {str(e)}")
+        raise
 
 def encode_image_to_base64(image):
     """Convert PIL Image to base64 string"""
