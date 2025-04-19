@@ -7,11 +7,34 @@ This file is used for production deployment with Gunicorn.
 import os
 import sys
 
-# Add the templates directory to the Python path to enable imports
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates'))
+# Add the current directory to the Python path to enable imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import the Flask app from templates directory
-from templates.glassrain_unified import app
+# Add any additional paths needed for modules
+templates_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+sys.path.insert(0, templates_path)
+
+try:
+    # First try to import from root directory
+    from glassrain_unified import app
+except ImportError:
+    try:
+        # If that fails, try to import from templates directory
+        from templates.glassrain_unified import app
+    except ImportError as e:
+        # If both fail, print error for debugging
+        import logging
+        logging.error(f"Error importing Flask app: {e}")
+        logging.error(f"Python path: {sys.path}")
+        logging.error(f"Files in current directory: {os.listdir('.')}")
+        logging.error(f"Files in templates directory: {os.listdir('templates') if os.path.exists('templates') else 'templates directory not found'}")
+        raise
+
+# Patch Flask app template folder if needed
+if hasattr(app, 'template_folder') and app.template_folder == 'templates':
+    # If app is trying to use a templates subfolder but is already in templates folder
+    # then update it to use the current directory
+    app.template_folder = '.'
 
 # This variable is used by Gunicorn
 application = app
