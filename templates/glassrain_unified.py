@@ -167,8 +167,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize Flask app
-app = Flask(__name__)
+# Initialize Flask app with adaptive template folder
+# This allows the app to work whether it's in the root directory or the templates directory
+import inspect
+current_file = inspect.getfile(inspect.currentframe())
+current_dir = os.path.dirname(os.path.abspath(current_file))
+if os.path.exists(os.path.join(current_dir, 'templates')):
+    # We're in the root directory, templates is a subdirectory
+    template_dir = 'templates'
+elif os.path.basename(current_dir) == 'templates':
+    # We're in the templates directory already
+    template_dir = '.'
+else:
+    # Try to find templates directory
+    template_dir = '.'
+    for check_dir in ['.', '..', '../templates', 'templates']:
+        if os.path.exists(os.path.join(current_dir, check_dir, 'address_entry.html')):
+            template_dir = check_dir
+            break
+
+print(f"Setting template_folder to: {template_dir}")
+app = Flask(__name__, template_folder=template_dir)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'glassrain-dev-secret-key')
 
 # Initialize CSRF protection
