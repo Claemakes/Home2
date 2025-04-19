@@ -1556,10 +1556,11 @@ def get_addresses_deprecated():
     logger.warning("Call to deprecated get_addresses() function")
     return get_all_addresses()
 
-@app.route('/address')
+@app.route('/address_entry')
 def address_entry():
-    """Render the address entry page"""
-    return render_template('address_entry.html')
+    # Get Mapbox token from environment
+    mapbox_token = os.environ.get('MAPBOX_API_KEY', '')
+    return render_template('address_entry.html', mapbox_token=mapbox_token)
 
 def generate_3d_property_model(latitude, longitude, address, property_data):
     """
