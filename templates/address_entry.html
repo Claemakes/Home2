@@ -267,13 +267,15 @@
             box-shadow: none;
         }
         
-        /* Mapbox Geocoder customization */
+        /* Mapbox Geocoder customization - enhanced for better visibility */
         .mapboxgl-ctrl-geocoder {
             width: 100% !important;
             max-width: 100% !important;
             box-shadow: none !important;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-            background-color: transparent !important;
+            background-color: rgba(26, 26, 26, 0.8) !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(194, 158, 73, 0.3) !important;
         }
         
         .mapboxgl-ctrl-geocoder--input {
@@ -282,6 +284,12 @@
             color: var(--cloud-white) !important;
             font-size: 18px !important;
             background-color: transparent !important;
+            transition: border-color 0.3s ease !important;
+        }
+        
+        .mapboxgl-ctrl-geocoder--input:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(194, 158, 73, 0.5) !important;
         }
         
         .mapboxgl-ctrl-geocoder--input::placeholder {
@@ -293,19 +301,87 @@
         }
         
         .mapboxgl-ctrl-geocoder--icon-search {
-            top: 15px !important;
+            top: 20px !important;
+            left: 12px !important;
         }
         
         .mapboxgl-ctrl-geocoder--button {
             background-color: transparent !important;
         }
         
+        .mapboxgl-ctrl-geocoder--suggestion {
+            color: var(--midnight-black) !important;
+            padding: 10px 15px !important;
+            border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+            transition: background-color 0.2s ease !important;
+        }
+        
+        .mapboxgl-ctrl-geocoder--suggestion:hover {
+            background-color: rgba(194, 158, 73, 0.1) !important;
+        }
+        
         .mapboxgl-ctrl-geocoder--suggestion-title {
             color: var(--midnight-black) !important;
+            font-weight: bold !important;
         }
         
         .mapboxgl-ctrl-geocoder--suggestion-address {
             color: #555 !important;
+            margin-top: 3px !important;
+        }
+        
+        /* Styling the suggestions dropdown container */
+        .mapboxgl-ctrl-geocoder--results {
+            margin-top: 3px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+            background-color: #fff !important;
+        }
+        
+        /* Add a status indicator */
+        .address-status {
+            margin-top: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: rgba(26, 26, 26, 0.7);
+            border: 1px solid rgba(194, 158, 73, 0.2);
+            margin-bottom: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .address-status.hidden {
+            display: none;
+        }
+        
+        .address-status:not(.hidden) {
+            opacity: 1;
+            display: flex;
+        }
+        
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .status-icon.valid {
+            background-color: var(--success-green);
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        }
+        
+        .status-icon.invalid {
+            background-color: var(--error-red);
+            box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
+        }
+        
+        .status-icon.hidden {
+            display: none;
         }
         
         /* Registration form overlay */
@@ -634,16 +710,11 @@
     </style>
 </head>
 <body>
-    <!-- Background animations -->
+    <!-- Background animations - cleaner version without floating text -->
     <div class="bg-animation">
         <div class="bg-grid"></div>
         <div class="glowing-orb" style="top: 20%; left: 20%;"></div>
         <div class="glowing-orb" style="top: 60%; left: 70%;"></div>
-        
-        <!-- Floating text elements with animation delays -->
-        <div class="floating-text" style="top: 30%;">revolutionizing home intelligence</div>
-        <div class="floating-text" style="top: 40%;">reimagining design possibilities</div>
-        <div class="floating-text" style="top: 50%;">transforming home services</div>
     </div>
     
     <div class="app-container">
@@ -660,6 +731,14 @@
             <form id="address-form" onsubmit="return false;">
                 <div id="geocoder" class="geocoder"></div>
                 <input type="hidden" id="address-json" name="address-json" />
+                
+                <!-- Address validation status indicator -->
+                <div class="address-status hidden" id="address-status">
+                    <div class="status-icon valid hidden" id="address-valid"></div>
+                    <div class="status-icon invalid hidden" id="address-invalid"></div>
+                    <span id="status-text">Address verified</span>
+                </div>
+                
                 <button type="submit" id="submit-button" class="build-button" disabled>
                     Build
                 </button>
@@ -826,6 +905,10 @@
         
         // Get elements for address form
         const submitButton = document.getElementById('submit-button');
+        const addressStatus = document.getElementById('address-status');
+        const addressValid = document.getElementById('address-valid');
+        const addressInvalid = document.getElementById('address-invalid');
+        const statusText = document.getElementById('status-text');
         
         // Set up the map once we get the Mapbox token
         // This also sets up a geocoder for address entry
@@ -908,6 +991,10 @@
                     addressStatus.classList.remove('hidden');
                     addressValid.classList.remove('hidden');
                     addressInvalid.classList.add('hidden');
+                    statusText.textContent = "Address verified: " + e.result.place_name;
+                    
+                    // Show map container
+                    document.getElementById('map-container').style.display = 'block';
                     
                     submitButton.disabled = false;
                     
@@ -986,6 +1073,7 @@
                         addressStatus.classList.remove('hidden');
                         addressValid.classList.add('hidden');
                         addressInvalid.classList.remove('hidden');
+                        statusText.textContent = "Please select a valid address";
                         
                         // Scroll to geocoder
                         document.getElementById('geocoder').scrollIntoView({ behavior: 'smooth' });
