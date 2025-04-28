@@ -174,21 +174,25 @@
             padding: 20px 40px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transform: perspective(1000px) rotateX(10deg);
+            transform: perspective(1000px) rotateX(5deg);
             margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
         }
         
         .logo {
             font-size: 42px;
             font-weight: bold;
             color: var(--primary-gold);
-            text-shadow: 0 2px 10px rgba(194, 158, 73, 0.3);
+            text-shadow: 0 2px 10px rgba(194, 158, 73, 0.4);
         }
         
         .tab-container {
             width: 100%;
             display: flex;
             margin-bottom: 20px;
+            position: relative;
+            z-index: 5;
         }
         
         .tab {
@@ -204,12 +208,32 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-gold);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
         
         .tab.active {
             background-color: var(--dark-gray);
-            color: var(--cloud-white);
+            color: var(--primary-gold);
             transform: translateY(-5px);
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .tab.active:before {
+            transform: scaleX(1);
         }
         
         /* Input container */
@@ -219,7 +243,28 @@
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(194, 158, 73, 0.2);
+            position: relative;
+            z-index: 5;
+        }
+        
+        .input-container:before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, rgba(194, 158, 73, 0.1), transparent, rgba(194, 158, 73, 0.1), transparent);
+            z-index: -1;
+            border-radius: 16px;
+            animation: gradientAnimation 6s linear infinite;
+        }
+        
+        @keyframes gradientAnimation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .input-field {
@@ -251,31 +296,48 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(194, 158, 73, 0.3);
             margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 5;
+        }
+        
+        .build-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
         }
         
         .build-button:hover {
             background-color: #d4af61;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(194, 158, 73, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(194, 158, 73, 0.5);
+        }
+        
+        .build-button:hover:before {
+            transform: translateX(100%);
         }
         
         .build-button:disabled {
-            background-color: #555;
-            color: #888;
+            background-color: #333;
+            color: #666;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
-        /* Mapbox Geocoder customization - enhanced for better visibility */
+        /* Mapbox Geocoder customization */
         .mapboxgl-ctrl-geocoder {
             width: 100% !important;
             max-width: 100% !important;
             box-shadow: none !important;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-            background-color: rgba(26, 26, 26, 0.8) !important;
-            border-radius: 8px !important;
-            border: 1px solid rgba(194, 158, 73, 0.3) !important;
+            background-color: transparent !important;
         }
         
         .mapboxgl-ctrl-geocoder--input {
@@ -284,12 +346,6 @@
             color: var(--cloud-white) !important;
             font-size: 18px !important;
             background-color: transparent !important;
-            transition: border-color 0.3s ease !important;
-        }
-        
-        .mapboxgl-ctrl-geocoder--input:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(194, 158, 73, 0.5) !important;
         }
         
         .mapboxgl-ctrl-geocoder--input::placeholder {
@@ -301,41 +357,19 @@
         }
         
         .mapboxgl-ctrl-geocoder--icon-search {
-            top: 20px !important;
-            left: 12px !important;
+            top: 15px !important;
         }
         
         .mapboxgl-ctrl-geocoder--button {
             background-color: transparent !important;
         }
         
-        .mapboxgl-ctrl-geocoder--suggestion {
-            color: var(--midnight-black) !important;
-            padding: 10px 15px !important;
-            border-bottom: 1px solid rgba(0,0,0,0.1) !important;
-            transition: background-color 0.2s ease !important;
-        }
-        
-        .mapboxgl-ctrl-geocoder--suggestion:hover {
-            background-color: rgba(194, 158, 73, 0.1) !important;
-        }
-        
         .mapboxgl-ctrl-geocoder--suggestion-title {
             color: var(--midnight-black) !important;
-            font-weight: bold !important;
         }
         
         .mapboxgl-ctrl-geocoder--suggestion-address {
             color: #555 !important;
-            margin-top: 3px !important;
-        }
-        
-        /* Styling the suggestions dropdown container */
-        .mapboxgl-ctrl-geocoder--results {
-            margin-top: 3px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
-            background-color: #fff !important;
         }
         
         /* Add a status indicator */
@@ -629,35 +663,29 @@
             position: absolute;
             width: 2px;
             height: 15px;
-            background: linear-gradient(to bottom, rgba(194, 158, 73, 0.1), rgba(194, 158, 73, 0.4));
-            border-radius: 50%;
-            transform-origin: bottom center;
-            animation: rain-fall linear infinite;
+            background: linear-gradient(to bottom, rgba(194, 158, 73, 0), rgba(194, 158, 73, 0.5));
+            animation: rain-drop-fall linear infinite;
         }
         
-        .gold-pulse {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(194, 158, 73, 0.4) 0%, rgba(194, 158, 73, 0) 70%);
-            opacity: 0;
-            animation: pulse 3s ease-in-out infinite;
+        @keyframes rotating {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         
-        #loading-text {
-            margin-top: 30px;
-            color: var(--glassrain-gold);
-            font-size: 16px;
-            letter-spacing: 1px;
+        @keyframes rain-drop-fall {
+            0% { transform: translateY(-150px) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(150px) scale(0.5); opacity: 0; }
         }
         
         #loading-progress {
-            margin-top: 10px;
-            width: 200px;
+            width: 100%;
             height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(194, 158, 73, 0.2);
             border-radius: 2px;
+            margin-top: 40px;
+            position: relative;
             overflow: hidden;
         }
         
@@ -668,53 +696,90 @@
             transition: width 0.5s ease;
         }
         
-        @keyframes rotating {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+        #loading-percentage {
+            margin-top: 10px;
+            color: var(--glassrain-gold);
+            font-size: 14px;
         }
         
-        @keyframes pulse {
-            0% {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            50% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(1.2);
-                opacity: 0;
-            }
+        #loading-status {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            text-align: center;
         }
         
-        @keyframes rain-fall {
-            0% {
-                transform: translateY(-20px) translateX(0px);
-                opacity: 0;
+        .small-data-loading {
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        /* Back button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--cloud-white);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-icon {
+            width: 20px;
+            height: 20px;
+            border-left: 2px solid var(--cloud-white);
+            border-bottom: 2px solid var(--cloud-white);
+            transform: rotate(45deg);
+            margin-left: 5px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 0 20px;
             }
-            10% {
-                opacity: 0.7;
-            }
-            90% {
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(300px) translateX(10px);
-                opacity: 0;
+            
+            .logo {
+                font-size: 36px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background animations - cleaner version without floating text -->
+    <!-- Back button -->
+    <a href="/" class="back-button">
+        <span class="back-icon"></span>
+    </a>
+    
+    <!-- Background animation -->
     <div class="bg-animation">
         <div class="bg-grid"></div>
+        <!-- Rain particles will be added by JS -->
+        
+        <!-- Glowing orbs -->
         <div class="glowing-orb" style="top: 20%; left: 20%;"></div>
         <div class="glowing-orb" style="top: 60%; left: 70%;"></div>
+        <div class="glowing-orb" style="top: 80%; left: 30%;"></div>
+        
+        <!-- Floating text elements -->
+        <div class="floating-text" style="top: 25%;">SPATIAL INTELLIGENCE</div>
+        <div class="floating-text" style="top: 35%;">PROPERTY VISUALIZATION</div>
+        <div class="floating-text" style="top: 45%;">DIGITAL TWIN MAPPING</div>
     </div>
     
     <div class="app-container">
@@ -723,14 +788,19 @@
         </div>
         
         <div class="tab-container">
-            <div class="tab active" id="tab-address">Enter Address</div>
-            <div class="tab" id="tab-returning">Returning User</div>
+            <div class="tab active">Enter Address</div>
+            <div class="tab">Returning User</div>
         </div>
         
-        <div class="input-container" id="address-input-container">
-            <form id="address-form" onsubmit="return false;">
-                <div id="geocoder" class="geocoder"></div>
-                <input type="hidden" id="address-json" name="address-json" />
+        <form id="addressForm" action="/api/process-address" method="post">
+            <div class="input-container">
+                <div id="geocoder" class="mapboxgl-ctrl"></div>
+                <input type="hidden" id="latitude" name="latitude" value="">
+                <input type="hidden" id="longitude" name="longitude" value="">
+                <input type="hidden" id="address" name="address" value="">
+                <input type="hidden" id="city" name="city" value="">
+                <input type="hidden" id="state" name="state" value="">
+                <input type="hidden" id="zipcode" name="zipcode" value="">
                 
                 <!-- Address validation status indicator -->
                 <div class="address-status hidden" id="address-status">
@@ -738,39 +808,41 @@
                     <div class="status-icon invalid hidden" id="address-invalid"></div>
                     <span id="status-text">Address verified</span>
                 </div>
-                
-                <button type="submit" id="submit-button" class="build-button" disabled>
-                    Build
-                </button>
-            </form>
-        </div>
+            </div>
+            
+            <button type="submit" id="buildButton" class="build-button" disabled>
+                Build
+            </button>
+        </form>
         
-        <div class="login-form" id="login-form">
-            <div class="form-group">
-                <label for="email-login">Email</label>
-                <input type="email" id="email-login" name="email-login" required>
-            </div>
-            <div class="form-group">
-                <label for="password-login">Password</label>
-                <input type="password" id="password-login" name="password-login" required>
-            </div>
-            <button type="button" class="login-button" id="login-button">Sign In</button>
-            <div class="switch-form">
-                Don't have an account? <a href="#" id="switch-to-address">Enter your address</a>
-            </div>
-        </div>
-        
-        <!-- Map container displayed below the address form -->
-        <div class="map-container" id="map-container">
+        <div id="map-container" class="map-container">
             <div id="map"></div>
         </div>
     </div>
     
-    <!-- Registration overlay (appears during 3D model loading) -->
-    <div class="registration-overlay" id="registration-overlay">
+    <!-- 3D Loading Screen (initially hidden) -->
+    <div id="loading-screen">
+        <div id="loading-container">
+            <div id="loading-ring"></div>
+            <div id="loading-house-container">
+                <!-- This will hold our 3D model -->
+            </div>
+            <!-- Rain drops will be added by JS -->
+        </div>
+        
+        <div id="loading-progress">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="loading-percentage">0%</div>
+        <div id="loading-status">Creating digital property twin...</div>
+        <div class="small-data-loading">Processing LiDAR and satellite imagery</div>
+    </div>
+    
+    <!-- Registration overlay (initially hidden) -->
+    <div id="registration-overlay" class="registration-overlay">
         <div class="registration-card">
-            <h2>Create Your GlassRain Account</h2>
-            <p>While we build your 3D home model, let's set up your account</p>
+            <h2>Create Your Account</h2>
+            <p>Save your property models and access additional features.</p>
             
             <form id="registration-form">
                 <div class="form-group">
@@ -782,583 +854,421 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
                     <div class="password-strength">
-                        <div class="strength-meter" id="strength-meter"></div>
+                        <div id="strength-meter" class="strength-meter"></div>
                     </div>
-                    <span class="strength-text" id="strength-text">Password strength</span>
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="first_name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" required>
+                    <span id="strength-text" class="strength-text">Password strength</span>
                 </div>
                 
                 <div class="form-check">
-                    <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
-                    <label for="terms" class="form-check-label">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    <input type="checkbox" id="terms" class="form-check-input" required>
+                    <label for="terms" class="form-check-label">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
                 </div>
                 
-                <button type="submit" class="build-button">Create Account</button>
+                <button type="submit" class="login-button">Create Account</button>
+                
+                <div class="switch-form">
+                    Already have an account? <a href="#" id="show-login">Log in</a>
+                </div>
+                
+                <div id="loading-animation" class="loading-animation" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Creating your account...</div>
+                </div>
             </form>
             
-            <div class="loading-animation" id="loading-animation" style="display: none;">
-                <div class="loading-spinner"></div>
-                <div class="loading-text">Building your 3D model...</div>
-            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" name="login-email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="login-password" required>
+                </div>
+                
+                <button type="submit" class="login-button">Log In</button>
+                
+                <div class="switch-form">
+                    Don't have an account? <a href="#" id="show-register">Register now</a>
+                </div>
+            </form>
         </div>
     </div>
-
+    
     <script>
-        // Tab switching
-        const tabAddress = document.getElementById('tab-address');
-        const tabReturning = document.getElementById('tab-returning');
-        const addressInputContainer = document.getElementById('address-input-container');
-        const loginForm = document.getElementById('login-form');
-        const switchToAddress = document.getElementById('switch-to-address');
+        // Background rain effect
+        const bgAnimation = document.querySelector('.bg-animation');
+        const rainCount = 50; // Number of rain particles
         
-        // Registration overlay and loading animation
-        const registrationOverlay = document.getElementById('registration-overlay');
-        const loadingAnimation = document.getElementById('loading-animation');
-        const registrationForm = document.getElementById('registration-form');
+        for (let i = 0; i < rainCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('rain-particle');
+            
+            // Random positioning
+            const randomX = Math.random() * 100;
+            const randomDelay = Math.random() * 5;
+            const randomDuration = 3 + Math.random() * 5;
+            
+            particle.style.left = `${randomX}%`;
+            particle.style.animationDelay = `${randomDelay}s`;
+            particle.style.animationDuration = `${randomDuration}s`;
+            
+            bgAnimation.appendChild(particle);
+        }
         
-        // Tab switching functionality
-        tabAddress.addEventListener('click', function() {
-            tabAddress.classList.add('active');
-            tabReturning.classList.remove('active');
-            addressInputContainer.style.display = 'block';
-            loginForm.classList.remove('active');
+        // Initialize Mapbox
+        mapboxgl.accessToken = '{{ mapbox_token }}';
+        
+        let geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            types: 'address',
+            countries: 'us',
+            minLength: 2, // Start searching after just 2 characters
+            placeholder: 'Enter your address',
+            mapboxgl: mapboxgl
         });
         
-        tabReturning.addEventListener('click', function() {
-            tabReturning.classList.add('active');
-            tabAddress.classList.remove('active');
-            addressInputContainer.style.display = 'none';
-            loginForm.classList.add('active');
+        // Add geocoder to the page
+        document.getElementById('geocoder').appendChild(geocoder.onAdd({}));
+        
+        // Create map but don't display it initially
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v11',
+            center: [-74.5, 40],
+            zoom: 9
         });
         
-        switchToAddress.addEventListener('click', function(e) {
+        // Store the selected location
+        let selectedLocation = null;
+        
+        // Handle geocoder result
+        // Handle when geocoder is cleared
+        geocoder.on('clear', () => {
+            // Disable build button
+            document.getElementById('buildButton').disabled = true;
+            
+            // Hide status indicator
+            document.getElementById('address-status').classList.add('hidden');
+            
+            // Hide map
+            document.getElementById('map-container').style.display = 'none';
+            
+            // Clear stored location
+            selectedLocation = null;
+        });
+        
+        geocoder.on('result', (e) => {
+            // Show the map container
+            document.getElementById('map-container').style.display = 'block';
+            
+            // Store the selected location
+            selectedLocation = e.result;
+            
+            // Extract coordinates
+            const [longitude, latitude] = e.result.center;
+            
+            // Update map
+            map.setCenter([longitude, latitude]);
+            map.setZoom(18);
+            
+            // Add marker
+            new mapboxgl.Marker({color: '#C29E49'})
+                .setLngLat([longitude, latitude])
+                .addTo(map);
+                
+            // Enable Build button
+            document.getElementById('buildButton').disabled = false;
+            
+            // Fill hidden fields for form submission
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+            document.getElementById('address').value = e.result.place_name;
+            
+            // Show success status indicator
+            const addressStatus = document.getElementById('address-status');
+            const addressValid = document.getElementById('address-valid');
+            const addressInvalid = document.getElementById('address-invalid');
+            const statusText = document.getElementById('status-text');
+            
+            addressStatus.classList.remove('hidden');
+            addressValid.classList.remove('hidden');
+            addressInvalid.classList.add('hidden');
+            statusText.textContent = "Address verified: " + e.result.place_name;
+            
+            // Extract city, state, zipcode if available
+            if (e.result.context) {
+                const contextParts = e.result.context;
+                let city, state, zipcode;
+                
+                for (const part of contextParts) {
+                    if (part.id.startsWith('place')) {
+                        city = part.text;
+                    } else if (part.id.startsWith('region')) {
+                        state = part.text;
+                    } else if (part.id.startsWith('postcode')) {
+                        zipcode = part.text;
+                    }
+                }
+                
+                if (city) document.getElementById('city').value = city;
+                if (state) document.getElementById('state').value = state;
+                if (zipcode) document.getElementById('zipcode').value = zipcode;
+            }
+        });
+        
+        // Handle form submission
+        document.getElementById('addressForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            tabAddress.click();
+            
+            // Check if we have a selected location
+            if (!selectedLocation) {
+                alert('Please select a valid address first');
+                return;
+            }
+            
+            // Show loading screen
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.display = 'flex';
+            
+            // Simulate loading progress
+            let progress = 0;
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = document.getElementById('loading-percentage');
+            const loadingStatus = document.getElementById('loading-status');
+            const statusMessages = [
+                'Analyzing satellite imagery...',
+                'Processing LiDAR data...',
+                'Calculating property boundaries...',
+                'Generating 3D model structure...',
+                'Applying textures and materials...',
+                'Building interactive features...',
+                'Finalizing property digital twin...'
+            ];
+            
+            // Add rain effects to the loading animation
+            const loadingContainer = document.getElementById('loading-container');
+            for (let i = 0; i < 30; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('rain-drop');
+                
+                // Random positioning
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 140;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                drop.style.left = `calc(50% + ${x}px)`;
+                drop.style.top = `calc(50% + ${y}px)`;
+                drop.style.animationDuration = `${1 + Math.random()}s`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                
+                loadingContainer.appendChild(drop);
+            }
+            
+            // Setup 3D model house for loading animation
+            setupLoadingHouse();
+            
+            // Progress simulation
+            const progressInterval = setInterval(() => {
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    
+                    // Submit data as JSON
+                    const formData = {
+                        latitude: document.getElementById('latitude').value,
+                        longitude: document.getElementById('longitude').value,
+                        street: selectedLocation.text || '',
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip: document.getElementById('zipcode').value,
+                        country: 'USA',
+                        propertyType: 'single_family',
+                        yearBuilt: 2000, // Default values
+                        squareFootage: 2000 // Default values
+                    };
+                    
+                    fetch('/api/process-address', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirect to dashboard with the new address ID
+                            window.location.href = '/dashboard?address_id=' + data.address_id;
+                        } else {
+                            alert('Error: ' + (data.error || 'Unknown error'));
+                            loadingScreen.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error submitting address. Please try again.');
+                        loadingScreen.style.display = 'none';
+                    });
+                    
+                    return;
+                }
+                
+                progress += Math.random() * 3;
+                progress = Math.min(progress, 100);
+                
+                // Update progress bar and text
+                progressBar.style.width = `${progress}%`;
+                progressPercentage.textContent = `${Math.round(progress)}%`;
+                
+                // Update status message
+                const statusIndex = Math.min(Math.floor(progress / 15), statusMessages.length - 1);
+                loadingStatus.textContent = statusMessages[statusIndex];
+                
+            }, 200);
         });
         
-        // Password strength checker
+        // Setup 3D loading house animation
+        function setupLoadingHouse() {
+            const container = document.getElementById('loading-house-container');
+            
+            // Create a scene
+            const scene = new THREE.Scene();
+            
+            // Create a camera
+            const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Create a renderer with transparency
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(200, 200);
+            container.appendChild(renderer.domElement);
+            
+            // Create a house geometry
+            const houseGroup = new THREE.Group();
+            
+            // Base
+            const baseGeometry = new THREE.BoxGeometry(2, 0.1, 2);
+            const baseMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xC29E49, 
+                transparent: true, 
+                opacity: 0.3 
+            });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = -0.5;
+            houseGroup.add(base);
+            
+            // Walls
+            const wallsGeometry = new THREE.BoxGeometry(1.5, 1, 1.5);
+            const wallsMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xC29E49, 
+                transparent: true, 
+                opacity: 0.2,
+                wireframe: true
+            });
+            const walls = new THREE.Mesh(wallsGeometry, wallsMaterial);
+            houseGroup.add(walls);
+            
+            // Roof
+            const roofGeometry = new THREE.ConeGeometry(1.2, 0.8, 4);
+            const roofMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xC29E49, 
+                transparent: true, 
+                opacity: 0.2,
+                wireframe: true
+            });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.rotation.y = Math.PI / 4;
+            roof.position.y = 0.9;
+            houseGroup.add(roof);
+            
+            // Add the house to the scene
+            scene.add(houseGroup);
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate the house
+                houseGroup.rotation.y += 0.01;
+                
+                // Pulsing effect
+                const pulseScale = 1 + 0.05 * Math.sin(Date.now() * 0.002);
+                houseGroup.scale.set(pulseScale, pulseScale, pulseScale);
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
+        
+        // Password strength meter
         const passwordInput = document.getElementById('password');
         const strengthMeter = document.getElementById('strength-meter');
         const strengthText = document.getElementById('strength-text');
         
         passwordInput.addEventListener('input', function() {
             const password = this.value;
-            
-            // Simple strength measurement
             let strength = 0;
-            if (password.length >= 8) strength += 25;
-            if (password.match(/[A-Z]/)) strength += 25;
-            if (password.match(/[0-9]/)) strength += 25;
-            if (password.match(/[^A-Za-z0-9]/)) strength += 25;
             
-            strengthMeter.style.width = strength + '%';
+            if (password.length >= 8) strength += 20;
+            if (password.match(/[a-z]+/)) strength += 20;
+            if (password.match(/[A-Z]+/)) strength += 20;
+            if (password.match(/[0-9]+/)) strength += 20;
+            if (password.match(/[^a-zA-Z0-9]+/)) strength += 20;
             
-            if (strength < 25) {
+            // Update strength meter
+            strengthMeter.style.width = `${strength}%`;
+            
+            if (strength < 40) {
                 strengthMeter.style.backgroundColor = '#ff4d4d';
-                strengthText.textContent = 'Weak';
-            } else if (strength < 50) {
+                strengthText.textContent = 'Weak password';
+            } else if (strength < 80) {
                 strengthMeter.style.backgroundColor = '#ffa64d';
-                strengthText.textContent = 'Fair';
-            } else if (strength < 75) {
-                strengthMeter.style.backgroundColor = '#ffff4d';
-                strengthText.textContent = 'Good';
+                strengthText.textContent = 'Moderate password';
             } else {
-                strengthMeter.style.backgroundColor = '#4dff4d';
-                strengthText.textContent = 'Strong';
+                strengthMeter.style.backgroundColor = '#4CAF50';
+                strengthText.textContent = 'Strong password';
             }
         });
         
-        // Confirm password validation
-        registrationForm.addEventListener('submit', function(e) {
+        // Registration form handlers
+        document.getElementById('show-login').addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const password = document.getElementById('password').value;
-            const confirm = document.getElementById('confirm_password').value;
-            
-            if (password !== confirm) {
-                alert('Passwords do not match');
-                return;
-            }
-            
-            // Show loading animation during 3D model building
-            loadingAnimation.style.display = 'flex';
-            
-            // Simulate form submission and redirect to dashboard
-            setTimeout(function() {
-                window.location.href = '/dashboard';
-            }, 3000);
+            document.getElementById('registration-form').style.display = 'none';
+            document.getElementById('login-form').classList.add('active');
         });
         
-        // Get elements for address form
-        const submitButton = document.getElementById('submit-button');
-        const addressStatus = document.getElementById('address-status');
-        const addressValid = document.getElementById('address-valid');
-        const addressInvalid = document.getElementById('address-invalid');
-        const statusText = document.getElementById('status-text');
-        
-        // Set up the map once we get the Mapbox token
-        // This also sets up a geocoder for address entry
-        let map, geocoder;
-        
-        // Load previous addresses if any
-        function loadPreviousAddresses() {
-            fetch('/api/addresses')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.addresses && data.addresses.length > 0) {
-                        const addressesSection = document.createElement('div');
-                        addressesSection.className = 'saved-addresses';
-                        addressesSection.innerHTML = '<h3>Recent Addresses</h3>';
-                        
-                        data.addresses.forEach(address => {
-                            const addressItem = document.createElement('div');
-                            addressItem.className = 'address-item';
-                            addressItem.textContent = address.full_address || 
-                                `${address.street}, ${address.city}, ${address.state} ${address.zip}`;
-                            
-                            addressItem.addEventListener('click', function() {
-                                // Use this address
-                                localStorage.setItem('currentAddressId', address.id);
-                                window.location.href = '/dashboard';
-                            });
-                            
-                            addressesSection.appendChild(addressItem);
-                        });
-                        
-                        const form = document.getElementById('address-form');
-                        form.parentNode.insertBefore(addressesSection, form.nextSibling);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading previous addresses:', error);
-                });
-        }
-
-        fetch('/api/mapbox-token')
-            .then(response => response.json())
-            .then(data => {
-                mapboxgl.accessToken = data.token;
-                
-                // Initialize map
-                map = new mapboxgl.Map({
-                    container: 'map',
-                    style: 'mapbox://styles/mapbox/satellite-streets-v12',
-                    center: [-98.5795, 39.8283], // Center of the USA
-                    zoom: 3
-                });
-                
-                map.addControl(new mapboxgl.NavigationControl());
-                
-                // Initialize geocoder for address search
-                geocoder = new MapboxGeocoder({
-                    accessToken: mapboxgl.accessToken,
-                    mapboxgl: mapboxgl,
-                    marker: false,
-                    placeholder: 'Enter your address',
-                    countries: 'us',
-                    types: 'address',
-                    minLength: 2, // Start showing suggestions after just 2 characters
-                    limit: 5,     // Show 5 most relevant results
-                    flyTo: false  // Don't automatically fly to locations as we enter text
-                });
-                
-                document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
-                
-                // Load previous addresses
-                loadPreviousAddresses();
-                
-                const submitButton = document.getElementById('submit-button');
-                
-                // Store the geocoded address in a hidden field when selected
-                geocoder.on('result', function(e) {
-                    document.getElementById('address-json').value = JSON.stringify(e.result);
-                    
-                    // Show success message
-                    addressStatus.classList.remove('hidden');
-                    addressValid.classList.remove('hidden');
-                    addressInvalid.classList.add('hidden');
-                    statusText.textContent = "Address verified: " + e.result.place_name;
-                    
-                    // Show map container
-                    document.getElementById('map-container').style.display = 'block';
-                    
-                    submitButton.disabled = false;
-                    
-                    // Update map with 3D buildings
-                    if (!map.getLayer('3d-buildings')) {
-                        map.addLayer({
-                            'id': '3d-buildings',
-                            'source': 'composite',
-                            'source-layer': 'building',
-                            'filter': ['==', 'extrude', 'true'],
-                            'type': 'fill-extrusion',
-                            'minzoom': 15,
-                            'paint': {
-                                'fill-extrusion-color': '#aaa',
-                                'fill-extrusion-height': [
-                                    'interpolate', ['linear'], ['zoom'],
-                                    15, 0,
-                                    15.05, ['get', 'height']
-                                ],
-                                'fill-extrusion-base': [
-                                    'interpolate', ['linear'], ['zoom'],
-                                    15, 0,
-                                    15.05, ['get', 'min_height']
-                                ],
-                                'fill-extrusion-opacity': 0.6
-                            }
-                        });
-                    }
-                    
-                    // Add a marker at the selected location
-                    new mapboxgl.Marker({
-                        color: "#C29E49"
-                    })
-                    .setLngLat(e.result.center)
-                    .addTo(map);
-                    
-                    // Fly to the selected location
-                    map.flyTo({
-                        center: e.result.center,
-                        zoom: 17,
-                        pitch: 60,
-                        bearing: 0
-                    });
-                });
-                
-                // When geocoder is cleared, disable the submit button
-                geocoder.on('clear', function() {
-                    document.getElementById('address-json').value = '';
-                    submitButton.disabled = true;
-                    
-                    // Hide status messages
-                    addressStatus.classList.add('hidden');
-                    
-                    // Reset the map view
-                    map.flyTo({
-                        center: [-98.5795, 39.8283],
-                        zoom: 3,
-                        pitch: 0,
-                        bearing: 0
-                    });
-                    
-                    // Remove any markers
-                    const markers = document.getElementsByClassName('mapboxgl-marker');
-                    while(markers[0]) {
-                        markers[0].parentNode.removeChild(markers[0]);
-                    }
-                });
-                
-                // Form submission
-                document.getElementById('address-form').addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    // Make sure an address was selected
-                    if (!document.getElementById('address-json').value) {
-                        // Show error message
-                        addressStatus.classList.remove('hidden');
-                        addressValid.classList.add('hidden');
-                        addressInvalid.classList.remove('hidden');
-                        statusText.textContent = "Please select a valid address";
-                        
-                        // Scroll to geocoder
-                        document.getElementById('geocoder').scrollIntoView({ behavior: 'smooth' });
-                        return;
-                    }
-                    
-                    // Get the address data
-                    const addressJson = JSON.parse(document.getElementById('address-json').value);
-                    
-                    // Disable button and show loading state
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = 'Processing...';
-                    
-                    // Extract needed data from the Mapbox geocoder result
-                    const address = {
-                        street: addressJson.address ? addressJson.address + ' ' + addressJson.text : addressJson.text,
-                        city: '',
-                        state: '',
-                        zip: '',
-                        country: 'USA',
-                        lat: addressJson.center[1],
-                        lng: addressJson.center[0],
-                        full_address: addressJson.place_name
-                    };
-                    
-                    // Extract city, state, zip from context
-                    if (addressJson.context) {
-                        addressJson.context.forEach(item => {
-                            const id = item.id.split('.')[0];
-                            if (id === 'place') {
-                                address.city = item.text;
-                            } else if (id === 'region') {
-                                address.state = item.text;
-                            } else if (id === 'postcode') {
-                                address.zip = item.text;
-                            } else if (id === 'country') {
-                                address.country = item.text;
-                            }
-                        });
-                    }
-                    
-                    // Send the data to the server
-                    fetch('/api/process-address', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(address)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Save address ID to localStorage
-                            if (data.address_id) {
-                                localStorage.setItem('currentAddressId', data.address_id);
-                            }
-                            
-                            // Show registration overlay instead of redirecting
-                            registrationOverlay.classList.add('active');
-                            
-                            // Reset the button state
-                            submitButton.disabled = false;
-                            submitButton.innerHTML = 'Build';
-                        } else {
-                            // Show error
-                            alert(data.error || 'Error processing address. Please try again.');
-                            submitButton.disabled = false;
-                            submitButton.innerHTML = 'Build';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error processing address:', error);
-                        alert('Error processing address. Please try again.');
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = 'Build';
-                    });
-                });
-                
-                // Floating helper functionality
-                document.querySelector('.floating-helper').addEventListener('click', function() {
-                    alert('Need help finding your address? Type your street address in the search box and select it from the dropdown suggestions. If you need further assistance, please contact support@glassrain.com.');
-                });
-            })
-            .catch(error => {
-                console.error('Error loading Mapbox token:', error);
-                document.getElementById('map').innerHTML = 
-                    '<div class="flex items-center justify-center h-full bg-gray-100">' + 
-                    '<p class="text-gray-500">Map could not be loaded. Please refresh the page or try again later.</p>' +
-                    '</div>';
-                
-                // Disable submit button
-                document.getElementById('submit-button').disabled = true;
-            });
-    </script>
-    <!-- 3D Loading Screen - GlassRain Effect -->
-    <div id="loading-screen">
-        <div id="loading-container">
-            <!-- House wireframe container -->
-            <div id="loading-house-container">
-                <!-- Three.js will render the wireframe house here -->
-            </div>
-            
-            <!-- Gold pulse effect -->
-            <div class="gold-pulse"></div>
-            
-            <!-- Rotating ring -->
-            <div id="loading-ring"></div>
-            
-            <!-- Rain drops will be added dynamically by JS -->
-        </div>
-        
-        <div id="loading-text">Building Your 3D Home Model...</div>
-        <div id="loading-progress">
-            <div id="progress-bar"></div>
-        </div>
-    </div>
-
-    <script>
-        // Process the address form submission
-        document.getElementById('address-form').addEventListener('submit', function(e) {
+        document.getElementById('show-register').addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Check if an address is selected
-            if (!document.getElementById('address-json').value) {
-                alert('Please select a valid address');
-                return;
-            }
-            
-            // Show the map if it's not already visible
-            const mapContainer = document.getElementById('map-container');
-            mapContainer.style.display = 'block';
-            
-            // Resize the map to ensure it renders correctly
-            if (map) map.resize();
-            
-            // When the Build button is clicked, show the registration form
-            // that appears during 3D model loading
-            const registrationOverlay = document.getElementById('registration-overlay');
-            registrationOverlay.classList.add('active');
-            
-            // In a production environment, you would submit the address to the server here
-            // and proceed with building the 3D model
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('registration-form').style.display = 'block';
         });
         
-        // Initialize the 3D loading animation (shown when going to dashboard)
-        const initLoadingScreen = () => {
-            const loadingScreen = document.getElementById('loading-screen');
-            const loadingHouseContainer = document.getElementById('loading-house-container');
-            const progressBar = document.getElementById('progress-bar');
+        // Form submission handlers (these would be properly connected in a real app)
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('loading-animation').style.display = 'flex';
             
-            // Create rain drops
-            for (let i = 0; i < 50; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'rain-drop';
-                drop.style.left = Math.random() * 300 + 'px';
-                drop.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                drop.style.animationDelay = Math.random() + 's';
-                loadingScreen.appendChild(drop);
-            }
-            
-            // Three.js setup for wireframe house
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            
-            renderer.setSize(250, 250);
-            renderer.setClearColor(0x000000, 0);
-            loadingHouseContainer.appendChild(renderer.domElement);
-            
-            // Create wireframe house geometry
-            const houseGroup = new THREE.Group();
-            
-            // Base cube for house
-            const geometry = new THREE.BoxGeometry(2, 1.5, 2);
-            const material = new THREE.MeshBasicMaterial({
-                color: 0xC29E49,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.5
-            });
-            
-            const house = new THREE.Mesh(geometry, material);
-            houseGroup.add(house);
-            
-            // Roof (pyramid)
-            const roofGeometry = new THREE.ConeGeometry(1.5, 1, 4);
-            const roofMaterial = new THREE.MeshBasicMaterial({
-                color: 0xC29E49,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.5
-            });
-            
-            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-            roof.position.y = 1.25;
-            roof.rotation.y = Math.PI / 4;
-            houseGroup.add(roof);
-            
-            // Add house to scene
-            scene.add(houseGroup);
-            
-            // Position camera
-            camera.position.z = 5;
-            
-            // Animation function
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                // Rotate house
-                houseGroup.rotation.y += 0.01;
-                
-                renderer.render(scene, camera);
-            }
-            
-            // Registration form submission
-            document.getElementById('registration-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Hide registration overlay
+            // In a real app, this would send the data to the server
+            setTimeout(() => {
+                // Simulate success
+                document.getElementById('loading-animation').style.display = 'none';
                 document.getElementById('registration-overlay').classList.remove('active');
                 
-                // Show loading screen
-                loadingScreen.style.display = 'flex';
-                
-                // Start 3D animation
-                animate();
-                
-                // Animate progress bar
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 1;
-                    progressBar.style.width = progress + '%';
-                    
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        
-                        // Redirect to dashboard
-                        setTimeout(() => {
-                            window.location.href = '/dashboard';
-                        }, 500);
-                    }
-                }, 50);
-            });
-        };
-        
-        // Initialize loading screen when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            initLoadingScreen();
-            
-            // Create the rain particle animations for background
-            createRainParticles();
+                // Show a success message or redirect
+            }, 2000);
         });
         
-        // Create the background rain particles
-        function createRainParticles() {
-            const bgAnimation = document.querySelector('.bg-animation');
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Create 50 rain particles with random properties
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'rain-particle';
-                
-                // Random position, size and animation duration
-                particle.style.left = Math.random() * 100 + 'vw';
-                particle.style.width = (Math.random() * 1.5 + 0.5) + 'px';
-                particle.style.height = (Math.random() * 15 + 5) + 'px';
-                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                particle.style.animationDelay = Math.random() + 's';
-                
-                bgAnimation.appendChild(particle);
-            }
-            
-            // Add more glowing orbs with random positions
-            for (let i = 0; i < 3; i++) {
-                const orb = document.createElement('div');
-                orb.className = 'glowing-orb';
-                orb.style.top = Math.random() * 80 + 10 + '%';
-                orb.style.left = Math.random() * 80 + 10 + '%';
-                orb.style.width = (Math.random() * 200 + 100) + 'px';
-                orb.style.height = orb.style.width;
-                orb.style.animationDelay = Math.random() * 5 + 's';
-                
-                bgAnimation.appendChild(orb);
-            }
-        }
+            // In a real app, this would validate the login with the server
+            document.getElementById('registration-overlay').classList.remove('active');
+        });
     </script>
 </body>
 </html>
